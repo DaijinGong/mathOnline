@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <title>杨萱专属刷题宝</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    #question {
+      display: inline-block;
+      width: 200px;
+      height: 80px;
+      text-align: center;
+      margin-top: 20px;
+      font-size: 40px;
+      line-height: 80px;
+
+    }
+    input {
+      display: block;
+      width: 180px;
+      height: 80px;
+      font-size: 20px;
+      font-size: 25px;
+      text-align: center;
+    }
+    button {
+      width: 200px;
+      height: 80px;
+      line-height: 30px;
+      text-align: center;
+      /* margin: 0 auto; */
+      font-size: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .box {
+      width: 95vw;
+      display: flex;
+      font-size: 20px;
+      line-height: 80px;
+      text-align: center;
+      justify-content: center;
+    }
+    body {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+
+    }
+    #chatBox {
+      font-size: 30px;
+    }
+  </style>
+  <script>
+    function getNewQuestion() {
+      // '/getQuestion'是新题
+      // '/getQuestion2'是错题
+      // '/getQuestion3'是应用题
+      $.get('/getQuestion', function(question) {
+        if(question){
+          $('#question').text(question['question']);
+          let grade = '已做'+String(question['totalNum'])+'道，'+'正确'+String(question['correctNum'])+'道'
+          if(question.totalWrongNum){
+            $('#grade2').text('错题共'+String(question['totalWrongNum'])+'道，'+'做'+String(question['caculateWrongNum'])+'道,'+'对'+String(question['correctWrongNum'])+'道')
+          }
+          if(question.type=='÷'){
+            $(".yu1").css('display','inline-block')
+          }else{
+            $(".yu1").css('display','none')
+          }
+          $('#grade').text(grade);
+        }else{
+          $('#question').text('打开失败');
+        }
+
+        // alert(grade,question['question'])
+      });
+    }
+    //刷新页面方法
+    $(document).ready(function() {
+      getNewQuestion();
+    });
+    //聊天方法
+    setInterval(()=>{
+      $.get('/chatBox',(res)=>{
+        $('#chatBox').text(res.chatBox)
+        // console.log('getChatBox...');
+        // console.log(res.chatBox);
+      })
+    },1000)
+    //提交答案方法
+    function submitAnswer() {
+      const answer = $('#answer').val();
+      const yu = $('#yu').val();
+      if(answer){
+        $.post('/submit', { answer:answer,yu:yu }, function() {
+        getNewQuestion();
+        $('#answer').val('');
+        $('#yu').val('');
+      });
+      }else{
+        alert('不要漏填！\n不要漏填！\n不要漏填！')
+      }
+      
+    }
+  </script>
+</head>
+<body>
+  <h1>回答以下问题</h1>
+  <h1 id="grade"></h1>
+  <h1 id="grade2"></h1>
+  <div id="question"></div>
+  <div class="box">
+    <input type="text" id="answer" placeholder="填写答案">
+    <span class="yu1">&nbsp余&nbsp</span>
+    <input type="text" class="yu1" id="yu" placeholder="填写答案">
+  </div>
+  <button onclick="submitAnswer()">提交答案</button>
+  <div class='box' id="chatBox"></div>
+</body>
+</html>
