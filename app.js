@@ -2,22 +2,6 @@ const { log } = require('console');
 const express = require('express');
 const fs = require('fs')
 const app = express();
-const mongoose = require('mongoose')
-
-app.use(express.static('public'));
-app.use(express.urlencoded({ extended: true }));
-let dburl = 'mongodb://localhost:27017'
-mongoose.connect(dburl,{useMongoClient:true})
-
-async function dbConnect(){
-    await client.connect()
-    console.log('db conect successfully')
-    const db = client.db('firstDB')
-    const collection = db.collection('firstDoc')
-    console.log('db set successfully')
-    return 'done'
-}
-dbConnect().then(console.log('function finish'))
 
 let newQuestion
 let gradeCorrectNum = 0
